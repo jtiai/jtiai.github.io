@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Developing Django apps with docker-compose and pipenv | Jani’s Magik</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Developing Django apps with docker-compose and pipenv" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="These are instruction how to setup and start developing your applications with Django, Docker and docker-compose using PostgreSQL as database backend." />
+<meta property="og:description" content="These are instruction how to setup and start developing your applications with Django, Docker and docker-compose using PostgreSQL as database backend." />
+<link rel="canonical" href="https://jtiai.github.io/django/2019/02/09/django-dev-with-docker-compose.html" />
+<meta property="og:url" content="https://jtiai.github.io/django/2019/02/09/django-dev-with-docker-compose.html" />
+<meta property="og:site_name" content="Jani’s Magik" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-02-09T19:30:00+02:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","headline":"Developing Django apps with docker-compose and pipenv","url":"https://jtiai.github.io/django/2019/02/09/django-dev-with-docker-compose.html","dateModified":"2019-02-09T19:30:00+02:00","datePublished":"2019-02-09T19:30:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://jtiai.github.io/django/2019/02/09/django-dev-with-docker-compose.html"},"description":"These are instruction how to setup and start developing your applications with Django, Docker and docker-compose using PostgreSQL as database backend.","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata" type="text/css">
+    <link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://jtiai.github.io/feed.xml" title="Jani's Magik" /></head><body><header class="site-header" role="banner">
+
+    <div class="wrapper"><a class="site-title" rel="author" href="/">Jani&#39;s Magik</a><nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewBox="0 0 18 15" width="18px" height="15px">
+                <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+              </svg>
+            </span>
+          </label>
+  
+          <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+        </nav></div>
+  </header>
+  <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Developing Django apps with docker-compose and pipenv</h1>
+    <p class="post-meta">
+      <div class="tags"><a href="/tag/django">django</a>&nbsp;<a href="/tag/docker">docker</a>&nbsp;</div>
+      <time class="dt-published" datetime="2019-02-09T19:30:00+02:00" itemprop="datePublished">Feb 9, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>These are instruction how to setup and start developing your applications with
+Django, Docker and docker-compose using PostgreSQL as database backend.</p>
+
+<p>Start with creating your project directory and empty <code class="highlighter-rouge">Pipfile</code>:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span><span class="nb">mkdir </span>myproject
+<span class="nv">$ </span><span class="nb">cd </span>myproject
+<span class="nv">$ </span><span class="nb">touch </span>Pipfile</code></pre></figure>
+
+<p>If you’re on Windows you don’t have touch but can uew :</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span><span class="nb">echo</span> <span class="o">&gt;</span> Pipfile</code></pre></figure>
+
+<p>Next you need to create <code class="highlighter-rouge">Dockefile</code> for your app itself. Note that you can pick
+any version of Python that you can find from Docker hub and put it to FROM line.
+Full range of Python images can be found at <a href="https://hub.docker.com/_/python">https://hub.docker.com/_/python</a>.</p>
+
+<figure class="highlight"><pre><code class="language-docker" data-lang="docker"><span class="k">FROM</span><span class="s"> python:3.7-slim</span>
+<span class="k">ENV</span><span class="s"> PYTHONUNBUFFERED 1</span>
+<span class="k">WORKDIR</span><span class="s"> /app</span>
+<span class="k">RUN </span>pip <span class="nb">install </span>pipenv
+<span class="k">COPY</span><span class="s"> ./Pipfile* /app/</span>
+<span class="k">RUN </span>pipenv <span class="nb">install</span> <span class="nt">--dev</span></code></pre></figure>
+
+<p>Next you need to create <code class="highlighter-rouge">docker-compose.yml</code>. For Postgres you use plain image and you
+can choose any version which you like. You can fine full range of images
+at <a href="https://hub.docker.com/_/postgres">https://hub.docker.com/_/postgres</a>.</p>
+
+<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="na">version</span><span class="pi">:</span> <span class="s1">'</span><span class="s">3.7'</span>
+
+<span class="na">services</span><span class="pi">:</span>
+  <span class="na">db</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">postgres:10.1-alpine</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">postgres_data:/var/lib/postgresql/data/</span>
+
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="na">build</span><span class="pi">:</span>
+      <span class="na">context</span><span class="pi">:</span> <span class="s">.</span>
+      <span class="na">dockerfile</span><span class="pi">:</span> <span class="s">Dockerfile</span>
+    <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">.:/code</span>
+    <span class="na">ports</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">8000:8000</span>
+    <span class="na">command</span><span class="pi">:</span> <span class="s">pipenv run python manage.py runserver 0.0.0.0:8000</span>
+    <span class="na">depends_on</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">db</span>
+
+<span class="na">volumes</span><span class="pi">:</span>
+  <span class="na">postgres_data</span><span class="pi">:</span></code></pre></figure>
+
+<p>At this point you do have minimal setup for Python and Postgres, now it is time to build
+the whole package for the first time to bootstrap your environment.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>docker-compose build</code></pre></figure>
+
+<p>Next you need to install first packages in container, in this case Django and
+psycopg2-binary libraries. You can use same command to install additional packages
+as well in the future.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>docker-compose run <span class="nt">--rm</span> web pipenv <span class="nb">install </span>django psycopg2-binary</code></pre></figure>
+
+<p>After installation finishes you will see changes in <code class="highlighter-rouge">Pipfile</code> and <code class="highlighter-rouge">Pipfile.lock</code>. If you
+don’t something went wrong. Now it’s important to note that image we do have doesn’t
+contain these new packages. They were installed in container that was removed
+after <code class="highlighter-rouge">pipenv install</code> finished it’s job.</p>
+
+<p>So rebuild the image. Remember to do this every time you add new packages to your
+<code class="highlighter-rouge">pipfile</code>.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>docker-compose build web</code></pre></figure>
+
+<p>After build finishes successfully it’s time to setup Django project
+and first app:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>docker-compose run <span class="nt">--rm</span> web pipenv run django-admin startproject myproject <span class="nb">.</span>
+<span class="nv">$ </span>docker-compose run <span class="nt">--rm</span> web pipenv run python manage.py startapp myapp</code></pre></figure>
+
+<p>Now you have to edit <code class="highlighter-rouge">myproject/settings.py</code> and it’s <code class="highlighter-rouge">DATABASES</code> setting to 
+use PostgreSQL instead of sqlite:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'default'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">'ENGINE'</span><span class="p">:</span> <span class="s">'django.db.backends.postgresql'</span><span class="p">,</span>
+        <span class="s">'NAME'</span><span class="p">:</span> <span class="s">'postgres'</span><span class="p">,</span>
+        <span class="s">'USER'</span><span class="p">:</span> <span class="s">'postgres'</span><span class="p">,</span>
+        <span class="s">'HOST'</span><span class="p">:</span> <span class="s">'db'</span><span class="p">,</span>
+        <span class="s">'PORT'</span><span class="p">:</span> <span class="mi">5432</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>There are are few things to note in these settings. <code class="highlighter-rouge">HOST</code> is actually service name
+from <code class="highlighter-rouge">docker-compose.yml</code> part. Adding dependency to <code class="highlighter-rouge">db</code> service docker-compose will
+inject internal ip of the service within your <code class="highlighter-rouge">web</code> container hosts file.</p>
+
+<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="na">services</span><span class="pi">:</span>
+  <span class="c1"># This is our service name</span>
+  <span class="na">db</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">postgres:10.1-alpine</span>
+
+  <span class="na">web</span><span class="pi">:</span>
+    <span class="c1"># And this tells our web-service is dependent on db, which is</span>
+    <span class="c1"># injected to container hosts file.</span>
+    <span class="na">depends_on</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="s">db</span>  </code></pre></figure>
+
+<p>And now you can start developing your app, add <code class="highlighter-rouge">myapp</code> to <code class="highlighter-rouge">INSTALLED_APPS</code> in your
+<code class="highlighter-rouge">settings.py</code> and start coding.</p>
+
+<p>Running development server.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>docker-compose up web</code></pre></figure>
+
+<p>And now you can point your browser to <a href="http://localhost:8000/">http://localhost:8000/</a></p>
+
+<p>Following list has few additional and useful commands to start working with Django.</p>
+
+<p>Making migrations.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>docker-compose run <span class="nt">--rm</span> web pipenv python manage.py makemigrations</code></pre></figure>
+
+<p>Migrating database.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>docker-compose run <span class="nt">--rm</span> web pipenv python manage.py migrate</code></pre></figure>
+
+<p>Creating superuser.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>docker-compose run <span class="nt">--rm</span> web pipenv python manage.py createsuperuser</code></pre></figure>
+
+<p>Upgrading package.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>docker-compose run <span class="nt">--rm</span> web pipenv <span class="nb">install</span> <span class="nt">--upgrade</span> &lt;package&gt;
+<span class="nv">$ </span>docker-compose build web</code></pre></figure>
+
+
+  </div><a class="u-url" href="/django/2019/02/09/django-dev-with-docker-compose.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Jani&#39;s Magik</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Jani&#39;s Magik</li><li><a class="u-email" href="mailto:jani.the.programmer@gmail.com">jani.the.programmer@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jtiai"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jtiai</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>My blog about Django and such</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

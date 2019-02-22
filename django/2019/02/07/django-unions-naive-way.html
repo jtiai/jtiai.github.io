@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>Union models naïve way | Jani’s Magik</title>
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Union models naïve way" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="How to handle union of two (or more), totally different models?" />
+<meta property="og:description" content="How to handle union of two (or more), totally different models?" />
+<link rel="canonical" href="https://jtiai.github.io/django/2019/02/07/django-unions-naive-way.html" />
+<meta property="og:url" content="https://jtiai.github.io/django/2019/02/07/django-unions-naive-way.html" />
+<meta property="og:site_name" content="Jani’s Magik" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-02-07T20:50:00+02:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","headline":"Union models naïve way","url":"https://jtiai.github.io/django/2019/02/07/django-unions-naive-way.html","dateModified":"2019-02-07T20:50:00+02:00","datePublished":"2019-02-07T20:50:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://jtiai.github.io/django/2019/02/07/django-unions-naive-way.html"},"description":"How to handle union of two (or more), totally different models?","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata" type="text/css">
+    <link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://jtiai.github.io/feed.xml" title="Jani's Magik" /></head><body><header class="site-header" role="banner">
+
+    <div class="wrapper"><a class="site-title" rel="author" href="/">Jani&#39;s Magik</a><nav class="site-nav">
+          <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+          <label for="nav-trigger">
+            <span class="menu-icon">
+              <svg viewBox="0 0 18 15" width="18px" height="15px">
+                <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+              </svg>
+            </span>
+          </label>
+  
+          <div class="trigger"><a class="page-link" href="/about/">About</a></div>
+        </nav></div>
+  </header>
+  <main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Union models naïve way</h1>
+    <p class="post-meta">
+      <div class="tags"><a href="/tag/django">django</a>&nbsp;<a href="/tag/orm">orm</a>&nbsp;</div>
+      <time class="dt-published" datetime="2019-02-07T20:50:00+02:00" itemprop="datePublished">Feb 7, 2019
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>How to handle union of two (or more), totally different models?</p>
+
+<p>This is naïve approach but it is relatively fast and works well
+for simple cases without adding too much complexity for actual code.</p>
+
+<p>Let’s define two models in <code class="highlighter-rouge">models.py</code>:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+
+
+<span class="k">class</span> <span class="nc">ModelA</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">price</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DecimalField</span><span class="p">(</span><span class="n">max_digits</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">decimal_places</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">TextField</span><span class="p">(</span><span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">"A: </span><span class="si">%</span><span class="s">s"</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+
+<span class="k">class</span> <span class="nc">ModelB</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">fairness</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">PositiveIntegerField</span><span class="p">()</span>
+    <span class="n">blocked_by</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">ModelA</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__unicode__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">"B: </span><span class="si">%</span><span class="s">s"</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span></code></pre></figure>
+
+<p>We want to have models to be sorted alphabetically by <code class="highlighter-rouge">name</code> and <code class="highlighter-rouge">title</code>
+(mixing them) and return real instances of both models as a final result.</p>
+
+<p>The queries would look like this:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">qs1</span> <span class="o">=</span> <span class="n">ModelA</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="s">"pk"</span><span class="p">,</span> <span class="s">"name"</span><span class="p">)</span>
+<span class="n">qs2</span> <span class="o">=</span> <span class="n">ModelB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="s">"pk"</span><span class="p">,</span> <span class="s">"title"</span><span class="p">)</span>
+
+<span class="n">items</span> <span class="o">=</span> <span class="n">qs1</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">qs2</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">"name"</span><span class="p">)</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">items</code> contains now items we wanted and in order as we wanted. A good thing is
+that items can be paginated or sliced. But there is a problem, how we can get back our
+model instances?</p>
+
+<p>Let’s enhance our queries a bit with additional annotation:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">qs1</span> <span class="o">=</span> <span class="n">ModelA</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="s">"A"</span><span class="p">,</span> <span class="n">output_field</span><span class="o">=</span><span class="n">CharField</span><span class="p">()))</span><span class="o">.</span><span class="n">values</span><span class="p">(</span>
+    <span class="s">"pk"</span><span class="p">,</span> <span class="s">"name"</span><span class="p">,</span> <span class="s">"source"</span>
+<span class="p">)</span>
+<span class="n">qs2</span> <span class="o">=</span> <span class="n">ModelB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">Value</span><span class="p">(</span><span class="s">"B"</span><span class="p">,</span> <span class="n">output_field</span><span class="o">=</span><span class="n">CharField</span><span class="p">()))</span><span class="o">.</span><span class="n">values</span><span class="p">(</span>
+    <span class="s">"pk"</span><span class="p">,</span> <span class="s">"title"</span><span class="p">,</span> <span class="s">"source"</span>
+<span class="p">)</span>
+
+<span class="n">items</span> <span class="o">=</span> <span class="n">qs1</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">qs2</span><span class="p">,</span> <span class="nb">all</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">'name'</span><span class="p">)</span></code></pre></figure>
+
+<p>Now <code class="highlighter-rouge">items</code> are annotated with <code class="highlighter-rouge">source</code> name of the object. So now we know which object
+is in the question. But how we get our instances back, since items is still a list of
+values?
+We could loop over items and query objects one by one but that might generate quite a
+lot of queries even for a short list.</p>
+
+<p>We do an assumption that all items are used so we pull them in as a list instead of
+queryset.</p>
+
+<p>Now the trick is to use <code class="highlighter-rouge">__in</code> lookup expression to make minimal amount of queries:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">objs_a</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+    <span class="n">ModelA</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="nb">filter</span><span class="p">(</span>
+        <span class="n">pk__in</span><span class="o">=</span><span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s">"pk"</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span> <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="s">"source"</span><span class="p">]</span> <span class="o">==</span> <span class="s">"A"</span><span class="p">]</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">objs_b</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+    <span class="n">ModelB</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="nb">filter</span><span class="p">(</span>
+        <span class="n">pk__in</span><span class="o">=</span><span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="s">"pk"</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span> <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="s">"source"</span><span class="p">]</span> <span class="o">==</span> <span class="s">"B"</span><span class="p">]</span>
+    <span class="p">)</span>
+<span class="p">)</span></code></pre></figure>
+
+<p>At this point we do have our lists of real objects. Note that they are really listt and
+not querysets because we want to loop over those lists later on.</p>
+
+<p>And the naïve piece of code to combine list of objects in correct order with
+ brute-force method:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">objs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="s">"source"</span><span class="p">]</span> <span class="o">==</span> <span class="s">"A"</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">obj_a</span> <span class="ow">in</span> <span class="n">objs_a</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj_a</span><span class="o">.</span><span class="n">pk</span> <span class="o">==</span> <span class="n">item</span><span class="p">[</span><span class="s">"pk"</span><span class="p">]:</span>
+                <span class="n">objs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj_a</span><span class="p">)</span>
+                <span class="k">break</span>
+    <span class="k">elif</span> <span class="n">item</span><span class="p">[</span><span class="s">"source"</span><span class="p">]</span> <span class="o">==</span> <span class="s">"B"</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">obj_b</span> <span class="ow">in</span> <span class="n">objs_b</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj_b</span><span class="o">.</span><span class="n">pk</span> <span class="o">==</span> <span class="n">item</span><span class="p">[</span><span class="s">"pk"</span><span class="p">]:</span>
+                <span class="n">objs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj_b</span><span class="p">)</span>
+                <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span><span class="s">"Invalid source"</span><span class="p">)</span></code></pre></figure>
+
+<p>After that loop finishes <code class="highlighter-rouge">objs</code> will contain all objects in orderly fashion and can
+be used for example in template to list them.</p>
+
+<p>Most probably you should refactor object retrieval if you do have more than few models
+to union or if you use it in more than one place.</p>
+
+  </div><a class="u-url" href="/django/2019/02/07/django-unions-naive-way.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Jani&#39;s Magik</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Jani&#39;s Magik</li><li><a class="u-email" href="mailto:jani.the.programmer@gmail.com">jani.the.programmer@gmail.com</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/jtiai"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">jtiai</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>My blog about Django and such</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
