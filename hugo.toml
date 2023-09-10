@@ -1,0 +1,7 @@
+baseURL = "https://jtiai.github.com/"
+languageCode = "en-us"
+title = "Janze World"
+theme = "hugo-theme-relearn"
+
+[outputs]
+home = ["HTML", "RSS", "SEARCH"]
