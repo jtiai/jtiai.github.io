@@ -1,10 +1,17 @@
 ---
-title: "Janze Tips and Tricks"
+title: "Janze Magik"
 date: 2023-09-10T00:00:00+03:00
 draft: false
+archetype: "home"
 ---
 
 These pages do contain various tips, tricks and information how to deal
 with different Godot issues.
 
-All examples Godot 4.x.
+All examples are written for Godot 4.1.
+
+### A List of sites that have helped me
+
+* [Godot Docs](https://docs.godotengine.org/en/stable/index.html)
+* [KidsCanCode](https://kidscancode.org/godot_recipes/4.x/)
+* [GDQuest Godot Tutorials](https://www.gdquest.com/tutorial/godot/)
