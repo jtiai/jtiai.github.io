@@ -39,11 +39,15 @@ Don't add functionality until you need it. For example if you have a game
 where the player can move left and right, you don't need to add jumping until
 you need it.
 
-## 5. Premaure Optimization is the Root of All Evil
+## 5. Premature Optimization is the Root of All Evil
 
 Don't optimize your code until you need to. For example, if you have a game
 where the player can move left and right, you don't need to optimize the
 movement code until you need to.
+
+And when you face a performance problem, don't optimize the code that you think
+is slow. Instead, profile your code to find out what is actually slow. Then
+optimize that code.
 
 ## 6. Rule of Three
 
