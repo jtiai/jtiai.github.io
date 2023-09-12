@@ -8,3 +8,10 @@ home = ["HTML", "RSS", "SEARCH"]
 
 [params]
     disableInlineCopyToClipBoard = true
+    showVisitedLinks = true
+    collapsibleMenu = true
+    disableBreadcrumb = false
+    disableNextPrev = false
+    disableLandingPageButton = true
+    breadcrumbSeparator = ">"
+    titleSeparator = "::"

@@ -1,8 +1,7 @@
 ---
-title: "Janze Magik"
+title: "Janze's Magik"
 date: 2023-09-10T00:00:00+03:00
 draft: false
-archetype: "home"
 ---
 
 These pages do contain various tips, tricks and information how to deal
