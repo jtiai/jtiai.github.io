@@ -52,6 +52,7 @@ optimize that code.
 ## 6. Rule of Three
 
 If you need to do something more than three times, you should create a function
-or a node that does that thing. For example, if you need to calculate the
-player's score more than three times, you should create a function that
-calculates the player's score.
+or a node that does that thing. For example, if you need to calculate damage done
+by a weapon, you should create a function that calculates the damage done by a
+weapon. Then you can call that function whenever you need to calculate the damage
+done by a weapon.
