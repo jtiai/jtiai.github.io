@@ -9,6 +9,13 @@ with different Godot issues.
 
 All examples are written for Godot 4.1.
 
+## A list of main topics
+
+* [General](/general/)
+  * General information about Godot and game development.
+* [Programming](/programming/)
+  * Godot programming tips and tricks.
+
 ### A List of sites that have helped me
 
 * [Godot Docs](https://docs.godotengine.org/en/stable/index.html)
