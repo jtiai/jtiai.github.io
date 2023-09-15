@@ -8,6 +8,29 @@ Debugging is the most important skill in programming. It's the skill that
 allows to find and fix problems in your code. It's the skill that allows you
 to write better code.
 
+Tools for debugging are built into Godot. You can use print statements and
+breakpoints to debug your code. Unfortunately tools aren't super great but
+they do the job.
+
+## How to debug
+
+Debugging is a skill that you learn by doing. The more you debug, the better
+you get at it. The most important thing is to be patient. Debugging can be
+frustrating, but it's also very rewarding.
+
+Debugging is an elimination process. You start by "shooting with a shotgun"
+and narrow down the problem until you find the cause. You can use multiple
+techniques to narrow down the problem.
+
+Once you get better at debugging, you will start to see patterns in your
+code. You will start to see the same problems over and over again. You will
+start to see the same solutions over and over again. You will start to see
+the same mistakes over and over again. This is a good thing. It means that
+you are learning.
+
+It's also very rewarding to debug someone else's code. It's a great way to
+learn new things.
+
 ## Print Statements
 
 The most basic debugging technique is to use print statements. You can use
