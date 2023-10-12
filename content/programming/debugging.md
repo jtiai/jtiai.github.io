@@ -113,7 +113,7 @@ variables on the fly.
 
 `Call Stack` panel shows the current call stack. You can click on the stack
 frames to see the state of the program at that point.
-![Call Stack](/images/debugging/callstack.png)
+![Call Stack](/images/debugging/stackframes.png)
 
 Call stack is the list of functions that are currently executing. For example,
 if you have a function that calls another function, the call stack will show
