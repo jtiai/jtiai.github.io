@@ -7,4 +7,7 @@ draft: false
 Here you can find miscellaenous programming tips.
 
 * [Debugging](/programming/debugging/)
+* [Dependency Injection](/programming/dependency-injection/)
 * [File and directory names](/programming/filenames/)
+* [Scene unique names](/programming/scene-unique-names/)
+* [Signals](/programming/signals/)
