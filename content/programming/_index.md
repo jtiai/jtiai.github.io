@@ -11,3 +11,4 @@ Here you can find miscellaenous programming tips.
 * [File and directory names](/programming/filenames/)
 * [Scene unique names](/programming/scene-unique-names/)
 * [Signals](/programming/signals/)
+* [Things about physics](/programming/things-about-physics/)
