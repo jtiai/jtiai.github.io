@@ -14,7 +14,7 @@ Everyone has heard "call down, signal up" in Godot. This is a good practice to f
 
 Dependency Injection is a design pattern that allows you to inject dependencies into your classes. This is useful for decoupling your code and making it more testable.
 
-In Godot it allows to inject parent object references to children.
+In Godot it allows to inject parent object references to children or sibling references to other siblings.
 
 ## How to use it?
 
