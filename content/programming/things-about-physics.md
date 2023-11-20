@@ -3,7 +3,7 @@ title: Things About Physics
 description: ""
 date: 2023-11-18T17:19:53.455Z
 preview: ""
-draft: true
+draft: false
 tags: []
 categories: []
 ---
