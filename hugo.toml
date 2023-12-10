@@ -20,5 +20,4 @@ home = ["HTML", "RSS", "SEARCH"]
 
 [services]
     [services.googleAnalytics]
-    ID = 'G-86FXBX8NCD'
-    
+    ID = 'G-C63EGS7YBY'
