@@ -17,3 +17,7 @@ home = ["HTML", "RSS", "SEARCH"]
     titleSeparator = "::"
     ordersectionsby = "title"
     alwaysopen = true
+
+[services]
+    [services.googleAnalytics]
+    ID = 'G-C63EGS7YBY'
