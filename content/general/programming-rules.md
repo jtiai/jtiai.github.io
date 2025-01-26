@@ -56,3 +56,14 @@ or a node that does that thing. For example, if you need to calculate damage don
 by a weapon, you should create a function that calculates the damage done by a
 weapon. Then you can call that function whenever you need to calculate the damage
 done by a weapon.
+
+## 7. Backups
+
+Save early, save often. Godot is software. Software tends to have bugs and
+some bugs may cause unintended crashes. Save your work early and often so
+you don't lose all your work in such a case.
+
+Do backup your work. Before any major changes, adding new components,
+trying out different Godot versions, etc. You can manually make copies but
+I use git to store and handle changes. Using git allows me to jump back
+and forth in development time.
